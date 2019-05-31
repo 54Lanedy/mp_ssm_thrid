@@ -4,6 +4,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +19,11 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @ContextConfiguration(locations = {"classpath:spring/spring-*.xml"})
 @TransactionConfiguration(defaultRollback = false)
 public class LoginTest {
+
+    @Before
+    public void loginBefore(){
+        System.out.println("准备登陆...");
+    }
 
     @Test
     public void login(){
