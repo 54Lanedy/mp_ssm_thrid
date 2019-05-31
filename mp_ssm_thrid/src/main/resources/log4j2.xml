@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--log4j2.xml官方推荐使用，放在resources路径下即可，而旧版本log4j采用的是log4j.properties配置-->
+
+<!--status定义了log4j本身的日志级别-->
+<Configuration status="WARN">
+    <Properties>
+        <property name="log_pattern">[%d{yyyy-MM-dd HH:mm:ss}] [%p] - %l - %m%n</property>
+    </Properties>
+
+    <Appenders>
+        <!-- 用来定义输出到控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="RollingFileDebug" fileName="${web:rootDir}/log4j2Logs/debug.log"
+                     filePattern="${web:rootDir}/log4j2Logs/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <Filters>
+                <ThresholdFilter level="DEBUG"/>
+                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!--最多保留20个日志文件-->
+            <DefaultRolloverStrategy max="20" min="0" />
+        </RollingFile>
+
+        <RollingFile name="RollingFileInfo" fileName="${web:rootDir}/log4j2Logs/info.log"
+                     filePattern="${web:rootDir}/log4j2Logs/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!--最多保留20个日志文件-->
+            <DefaultRolloverStrategy max="20" min="0" />
+        </RollingFile>
+
+        <RollingFile name="RollingFileWarn" fileName="${web:rootDir}/log4j2Logs/warn.log"
+                     filePattern="${web:rootDir}/log4j2Logs/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!--最多保留20个日志文件-->
+            <DefaultRolloverStrategy max="20" min="0" />
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="${web:rootDir}/log4j2Logs/error.log"
+                     filePattern="${web:rootDir}/log4j2Logs/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!--最多保留20个日志文件-->
+            <DefaultRolloverStrategy max="20" min="0" />
+        </RollingFile>
+
+        <RollingFile name="RollingFileFatal" fileName="${web:rootDir}/log4j2Logs/fatal.log"
+                     filePattern="${web:rootDir}/log4j2Logs/$${date:yyyy-MM}/fatal-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="FATAL"/>
+            <PatternLayout pattern="${log_pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!--最多保留20个日志文件-->
+            <DefaultRolloverStrategy max="20" min="0" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <Logger name="org.springframework" level="INFO" />
+        <Logger name="org.mybatis" level="INFO" />
+        <!--level定义了打印日志的级别-->
+        <Root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>
+            <appender-ref ref="RollingFileFatal"/>
+        </Root>
+    </Loggers>
+</Configuration>

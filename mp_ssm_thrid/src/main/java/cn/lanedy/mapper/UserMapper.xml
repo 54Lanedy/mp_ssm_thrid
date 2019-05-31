@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.lanedy.mapper.UserMapper">
+    <!-- 根据用户名查询-->
+    <select id="findByName" parameterType="String" resultType="cn.lanedy.entity.User">
+        select * from sys_users where username = #{username};
+    </select>
+
+    <!-- 创建用户 -->
+    <insert id="create" parameterType="cn.lanedy.entity.User">
+        insert into sys_users
+        (username,password,salt,locked)
+        values
+        (#{username},#{password},#{salt},#{locked})
+    </insert>
+
+    <!-- 根据id查询用户 -->
+    <select id="findById" parameterType="Long" resultType="cn.lanedy.entity.User">
+        select * from sys_users where id=#{id}
+    </select>
+
+    <!-- 全部用户 -->
+    <select id="findAll" resultType="cn.lanedy.entity.User">
+        select * from sys_users
+    </select>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="cn.lanedy.entity.User">
+        update sys_users
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="salt != null">
+                salt = #{salt},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId},
+            </if>
+            <if test="locked != null ">
+                locked = #{locked},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="Long">
+        delete from sys_users where id=#{id}
+    </delete>
+
+    <!-- 根据用户名查询对应的角色 -->
+    <select id="findRoles" parameterType="String" resultType="cn.lanedy.entity.Role">
+        SELECT r.id, r.role, r.description FROM
+        sys_users u, sys_roles r, sys_users_roles ur
+        WHERE
+        u.username = #{username}
+        AND
+        u.id = ur.user_id
+        AND
+        r.id = ur.role_id
+    </select>
+
+    <!--根据用户名查找角色-->
+    <select id="findRolesByUsername" parameterType="String" resultType="cn.lanedy.entity.Role">
+        select r.id,r.role,r.description from
+        sys_users u,sys_roles r,sys_users_roles ur
+        where
+        u.username=#{username}
+        and
+        u.id=ur.user_id
+        and
+        r.id=ur.role_id
+    </select>
+    <!-- 删除此用户关联的所有角色信息 -->
+    <delete id="deleteAllUserRoles" parameterType="Long">
+        DELETE FROM sys_users_roles WHERE user_id = #{id}
+    </delete>
+    <!-- 创建用户-角色关系 -->
+    <insert id="correlationRoles" parameterType="Long">
+        INSERT INTO sys_users_roles(user_id, role_id) VALUES(#{userId}, #{roleId})
+    </insert>
+    <!-- 判断指定的用户和角色是否存在 -->
+    <select id="exists" parameterType="Long" resultType="Boolean">
+        SELECT COUNT(1) FROM sys_users_roles WHERE user_id = #{userId} AND role_id = #{roleId}
+    </select>
+</mapper>

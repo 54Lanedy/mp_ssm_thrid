@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ehcache name="shirocache">
+    <diskStore path="java.io.tmpdir"/>
+    <!-- 登录记录缓存 锁定10分钟 -->
+    <cache name="passwordRetryCache"
+            maxEntriesLocalHeap="2000"
+            eternal="false"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="0"
+            overflowToDisk="false"
+            statistics="true">
+    </cache>
+    <!-- 身份缓存 -->
+    <cache name="authenticationCache"
+            maxEntriesLocalHeap="2000"
+            eternal="false"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="0"
+            overflowToDisk="false"
+            statistics="true">
+    </cache>
+    <!-- 权限缓存 -->
+    <cache name="authorizationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <!-- shiro活动会话缓存 -->
+    <!--eternal：确保缓存项（Session 实例）永不过期或被缓存自动清除。这是很有必要的，因为 Shiro 基于计划过程完成自己的验证。如果我们关掉这项，缓存将会在 Shiro 不知道的情况下清扫这些 Sessions，这可能引起麻烦。-->
+    <!--overflowToDisk="true" - 这确保当你溢出进程内存时，会话不丢失且能够被序列化到磁盘上-->
+    <cache name="shiro-activeSessionCache"
+            maxEntriesLocalHeap="2000"
+            eternal="false"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="0"
+            overflowToDisk="false"
+            statistics="true">
+    </cache>
+
+
+</ehcache>

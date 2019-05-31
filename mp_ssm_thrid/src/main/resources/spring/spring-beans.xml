@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 配置注解扫描 -->
+    <context:component-scan base-package="cn.lanedy"/>
+
+    <!-- 加载数据库配置文件，不管是在一个Spring文件还是在多个Spring文件使用多个<context:property-placeholder>是不允许的 -->
+    <!--解决方法：1：统一写成*.properties的classpath
+                2：spring3.0以上添加ignore-unresolvable="true"属性 ,设置它为true的主要原因是解决一种xml中有多个配置文件时的情况
+    -->
+    <context:property-placeholder location="classpath:other/*.properties"/>
+
+    <!-- 数据库连接池 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!-- 配置数据库连接池属性 -->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 配置SqlSessionFactory对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 加载mybatis的配置文件 -->
+        <property name="configLocation" value="classpath:mybatis/mybatis.xml"/>
+        <!-- 扫描Mapper层的配置文件 -->
+        <property name="mapperLocations" value="classpath:cn/lanedy/mapper/*.xml"/>
+    </bean>
+
+    <!-- 启用mybatis的接口代理开发模式（接口和Xml配置必须同名，并且在同一目录下） -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.lanedy.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>
